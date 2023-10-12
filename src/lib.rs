@@ -40,9 +40,6 @@ impl Vertex {
 }
 
 
-// lib.rs
-
-// lib.rs
 const VERTICES: &[Vertex] = &[
     Vertex { position: [-0.0868241, 0.49240386, 0.0], color: [0.5, 0.0, 0.5] }, // A
     Vertex { position: [-0.49513406, 0.06958647, 0.0], color: [0.5, 0.0, 0.5] }, // B
@@ -55,6 +52,31 @@ const INDICES: &[u16] = &[
     0, 1, 4,
     1, 2, 4,
     2, 3, 4,
+];
+
+
+const VERTICES2: &[Vertex] = &[
+    Vertex { position: [0.0, 0.0, 0.0], color: [0.0, 1.0, 0.5] },
+    Vertex { position: [0.5, 0.0, 0.0], color: [1.0, 0.0, 0.5] }, // R
+    Vertex { position: [0.32849,  0.37695, 0.0], color: [0.0, 0.0, 1.0] },
+    Vertex { position: [-0.1397,  0.5, 0.0], color: [0.5, 0.0, 0.5] },
+    Vertex { position: [-0.4794,  0.14183, 0.0], color: [0.5, 0.0, 0.5] }, // L
+    Vertex { position: [-0.3784, -0.32682, 0.0], color: [0.5, 0.0, 0.5] },
+    Vertex { position: [0.0, -0.5, 0.0], color: [0.5, 0.0, 0.5] },
+    Vertex { position: [0.45464, -0.20807, 0.0], color: [0.5, 0.0, 0.5] },
+    Vertex { position: [0.42073,  0.27015, 0.0], color: [0.2, 0.2, 0.2] },
+];
+
+
+const INDICES2: &[u16] = &[
+    0, 1, 2,
+    0, 2, 3,
+    0, 3, 4,
+    0, 4, 5,
+    0, 5, 6,
+    0, 6, 7,
+    0, 7, 8,
+    0, 8, 1,
 ];
 
 
@@ -286,6 +308,8 @@ impl State {
             } => {
 
                 let device = &self.device;
+
+
                 let shader = device.create_shader_module(wgpu::include_wgsl!("shader.wgsl"));
                 let render_pipeline_layout =
                     device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -297,6 +321,28 @@ impl State {
 
                 if self.pipeline_alternative == PipelineAlternatives::Default {
                     self.pipeline_alternative = PipelineAlternatives::Alternative1;
+
+                    let vertex_buffer = device.create_buffer_init(
+                        &wgpu::util::BufferInitDescriptor {
+                            label: Some("Vertex Buffer"),
+                            contents: bytemuck::cast_slice(VERTICES),
+                            usage: wgpu::BufferUsages::VERTEX,
+                        }
+                    );
+
+                    let index_buffer = device.create_buffer_init(
+                        &wgpu::util::BufferInitDescriptor {
+                            label: Some("Index Buffer"),
+                            contents: bytemuck::cast_slice(INDICES),
+                            usage: wgpu::BufferUsages::INDEX,
+                        }
+                    );
+                    let num_indices = INDICES.len() as u32;
+
+                    self.vertex_buffer = vertex_buffer;
+                    self.index_buffer = index_buffer;
+                    self.num_indices = num_indices;
+
                     render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
                         label: Some("Render Pipeline"),
                         layout: Some(&render_pipeline_layout),
@@ -338,6 +384,30 @@ impl State {
                         });
                 } else {
                     self.pipeline_alternative = PipelineAlternatives::Default;
+
+                    let vertex_buffer = device.create_buffer_init(
+                        &wgpu::util::BufferInitDescriptor {
+                            label: Some("Vertex Buffer"),
+                            contents: bytemuck::cast_slice(VERTICES2),
+                            usage: wgpu::BufferUsages::VERTEX,
+                        }
+                    );
+
+                    let index_buffer = device.create_buffer_init(
+                        &wgpu::util::BufferInitDescriptor {
+                            label: Some("Index Buffer"),
+                            contents: bytemuck::cast_slice(INDICES2),
+                            usage: wgpu::BufferUsages::INDEX,
+                        }
+                    );
+                    let num_vertices = VERTICES2.len() as u32;
+                    let num_indices = INDICES2.len() as u32;
+
+                    self.vertex_buffer = vertex_buffer;
+                    self.index_buffer = index_buffer;
+                    self.num_vertices = num_vertices;
+                    self.num_indices = num_indices;
+
                     render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
                         label: Some("Render Pipeline"),
                         layout: Some(&render_pipeline_layout),
