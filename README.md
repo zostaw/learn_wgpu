@@ -4,9 +4,7 @@ This is my playground for learning WGPU.
 
 ## First figures
 
-<img src="resources/circle1.png" width=200>
-<img src="resources/circle2.png" width=200>
-<img src="resources/pentagon.png" width=200>
+<img src="resources/first_figures.gif" width=300>
 
 ## Acknowledgments
 
